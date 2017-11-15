@@ -1,8 +1,0 @@
-Switch to 0.
-Copy Launch3.kos to 1.
-Copy Orbit.kos to 1.
-Copy Land.kos to 1.
-Switch to 1.
-RUN Launch3.kos.
-RUn Orbit.kos.
-Run Land.kos.

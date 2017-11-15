@@ -8,10 +8,13 @@ LOCK THROTTLE TO 1.0.   // 1.0 is the max, 0.0 is idle.
 //left off. The PRESERVE keyword keeps the trigger active even after it
 //has been triggered.
 
-SET myPart TO SHIP:PARTSDUBBED("FuelA")[0].
+//SET myPart TO SHIP:PARTSDUBBED("FuelA")[0].
+
+SET Logging TO FALSE.
 
 SET TargetAltitude TO 80000.
-SET TargetOrbitalSpeed TO 600000 * SQRT(9.8/(600000+TargetAltitude)).
+SET GravCst TO 9.82. 
+SET TargetOrbitalSpeed TO 600000 * SQRT(GravCst/(600000+TargetAltitude)).
 SET Staggincount TO 3.
 Set PitchingSteer to 90.
 SET AirResistPitch TO 90.
@@ -23,15 +26,18 @@ SET DragCoef TO 1.
 SET CrossSection TO 1.25.
 SET Area TO constant:pi * (CrossSection/2)*(CrossSection/2).
 SET DragCST TO DragCoef * Area.
+SET RemainingSecs TO 400.
+SET oneSecondsLater to TIME:SECONDS + 1.
+
 
 PRINT "TargetAltitude:" + TargetAltitude .
 PRINT "TargetOrbitalSpeed" + TargetOrbitalSpeed.
 
 //For Apergus Stagging
-WHEN myPart:RESOURCES[0]:amount = 0 THEN {
-	PRINT "Part Staging".
-	STAGE.
-	}
+//WHEN myPart:RESOURCES[0]:amount = 0 THEN {
+//	PRINT "Part Staging".
+//	STAGE.
+//	}
 
 
 WHEN MAXTHRUST = 0 THEN {
@@ -43,35 +49,89 @@ WHEN MAXTHRUST = 0 THEN {
 	RETURN TRUE.
 
 }.
+
+if(Logging) {
+LOG "TIME" + "," +
+ "SHIP:ALTITUDE" + "," +
+ "TargetAltitude" + "," +
+ "AltitudePitch" + "," +
+ "GROUNDSPEED" + "," +
+ "VERTICALSPEED" + "," +
+ "AIRSPEED" + "," +
+ "SpeedPitch" + "," +
+ "SHIP:Q" + "," +
+ "SHIP:SENSORS:PRES" + "," +
+ "AirResistPitch" + "," +
+ "SHIP:APOAPSIS" + "," +
+ "AVAILABLETHRUST" + "," +
+ "SHIP:MASS" + "," +
+ "SHIP:WETMASS" + "," +
+ "SHIP:DRYMASS" + "," +
+ "PitchingSteer"
+  to "0:/Launch.csv". 
+
+  }.
+//Loggin loop
+WHEN TIME:SECONDS > oneSecondsLater THEN {
+if(Logging) {
+SET oneSecondsLater to TIME:SECONDS + 1.
+LOG TIME:SECONDS + "," +
+ SHIP:ALTITUDE + "," +
+ TargetAltitude + "," +
+ AltitudePitch + "," +
+ GROUNDSPEED + "," +
+ VERTICALSPEED + "," +
+ AIRSPEED + "," +
+ SpeedPitch + "," +
+ SHIP:Q + "," +
+ SHIP:SENSORS:PRES + "," +
+ AirResistPitch + "," +
+ SHIP:APOAPSIS + "," +
+ AVAILABLETHRUST + "," +
+ SHIP:MASS + "," +
+ SHIP:WETMASS + "," +
+ SHIP:DRYMASS + "," +
+ PitchingSteer
+  to "0:/Launch.csv". 
+  }.
+RETURN TRUE.
+}
+
+
 //This will be our main control loop for the ascent. It will
 //cycle through continuously until our apoapsis is greater
 //than 100km. Each cycle, it will check each of the IF
 //statements inside and perform them if their conditions
 //are met.
-LOCK AirEstimatedLoss TO SHIP:Q * DragCST * ((70000-SHIP:ALTITUDE)/SIN(PitchingSteer))/MAX(0.0001,SHIP:AIRSPEED).
-LOCK AirResistPitch TO (AirEstimatedLoss*10).
-LOCK SpeedPitch TO (100-(SHIP:VELOCITY:SURFACE:MAG/10)).
-LOCK AltitudePitch TO (90 - ((SHIP:Altitude /50000 )*90)).
-LOCK GravityLoss TO (AVAILABLETHRUST/(MASS)*SIN(PitchingSteer)).
-LOCK GravityEstimatedLoss TO (TargetOrbitalSpeed-GROUNDSPEED)*(SIN(PitchingSteer)/MAX(0.0001,COS(PitchingSteer))).
+LOCK RemainingSecs TO ((70000-SHIP:ALTITUDE)/MAX(0.0000001,SIN(PitchingSteer)))  /  MAX(0.0000001,SHIP:AIRSPEED).
+LOCK AirEstimatedLoss TO (SHIP:Q * DragCST)/2 * RemainingSecs.
+LOCK AirResistPitch TO MIN((AirEstimatedLoss*10),90).
+LOCK SpeedPitch TO (100-(GROUNDSPEED/12)).
+LOCK AltitudePitch TO (90 - ((SHIP:Altitude /60000 )*90)).
+LOCK GravityLoss TO SIN(PitchingSteer)*AVAILABLETHRUST - SHIP:MASS * GravCst.
+LOCK GravityEstimatedLoss TO GravityLoss*SHIP:MASS*(TargetOrbitalSpeed-GROUNDSPEED)/(AVAILABLETHRUST*MAX(0.0001,COS(PitchingSteer))).
+LOCK LNPitch TO 90 - (90 *  LN(SHIP:ALTITUDE/TargetAltitude +1)).
 
-SET MYSTEER TO HEADING(90,90).
+SET MYSTEER TO HEADING(0,90).
 LOCK THROTTLE TO  AdjustedThrottle.
 LOCK STEERING TO MYSTEER. // from now on we'll be able to change steering by just assigning a new value to MYSTEER
 UNTIL SHIP:APOAPSIS > 80000 { //Remember, all altitudes will be in meters, not kilometers
     //For the initial ascent, we want our steering to be straight
     //up and rolled due east
 
-	IF  SHIP:ALTITUDE < 1000 {
-		SET PitchingSteer to AltitudePitch.
-	}ELSE IF PitchingSteer < AltitudePitch {
-		SET PitchingSteer TO AltitudePitch.
-	}ELSE IF AirEstimatedLoss < GravityEstimatedLoss{
-		SET PitchingSteer TO PitchingSteer - 0.1.
-	}ELSE IF AirEstimatedLoss > GravityEstimatedLoss{
-		SET PitchingSteer TO PitchingSteer + 0.1.
-	} 
-	
+	IF  SHIP:ALTITUDE < 500 {
+		SET PitchingSteer to AltitudePitch. //Below 500, be conservative....
+	}ELSE {
+		SET PitchingSteer TO MIN(AltitudePitch,SpeedPitch).
+		}
+		
+		//ELSE IF AirEstimatedLoss < GravityEstimatedLoss{
+		//	SET PitchingSteer TO PitchingSteer - 0.5.
+		//}ELSE IF AirEstimatedLoss > GravityEstimatedLoss{
+		//	SET PitchingSteer TO PitchingSteer + 0.5.
+	//	}
+	//}
+
 //		} ELSE IF AirResistPitch < AltitudePitch {
 		//Not being aggressive enough
 //		SET PitchingSteer TO AirResistPitch.
@@ -79,26 +139,22 @@ UNTIL SHIP:APOAPSIS > 80000 { //Remember, all altitudes will be in meters, not k
 //		SET PitchingSteer to AltitudePitch.
 //	}
 
-	
 	IF PitchingSteer >90 SET PitchingSteer to 90.
 	IF PitchingSteer <0 SET PitchingSteer to 0.
 
 
 
 	PRINT "Pitching to " + PitchingSteer + " degrees" AT(0,15).
-	PRINT ROUND(SHIP:APOAPSIS,0) AT (0,16).
+	PRINT "APOAPSIS: " + ROUND(SHIP:APOAPSIS,0) AT (0,16).
 	PRINT "Velocities " AT(0,17).
-
 	PRINT "Ship Air Velocity:" + SHIP:AIRSPEED AT(0,18).
 	PRINT "Air Pressure     :" + SHIP:Q AT(0,19).
-	PRINT "Estimated AirLoss:" + AirEstimatedLoss AT(0,20).
-	PRINT "Air Resist Pitch :" + AirResistPitch AT(0,21).
-	PRINT "Speed Pitch      :" + SpeedPitch AT(0,22).
-	PRINT "Gravity Loss     :" + GravityLoss AT(0,23).
-	PRINT "Est. Gravity Loss:" + GravityEstimatedLoss  AT(0,24).
-	PRINT "Outside pressure :" + SHIP:SENSORS:PRES AT(0,25).
-
-
+	PRINT "Estimated AirLoss:" + AirEstimatedLoss AT(0,21).
+	PRINT "Gravity Loss     :" + GravityLoss AT(0,22).
+	PRINT "Est. Gravity Loss:" + GravityEstimatedLoss  AT(0,23).
+	PRINT "Air Resist Pitch :" + AirResistPitch AT(0,24).
+	PRINT "Speed Pitch      :" + SpeedPitch AT(0,25).
+	PRINT "LN (70000x) Pitch:" + LNPitch  AT(0,26).
 
 	// Logic for Throttle going too fast
 //	IF AirEstimatedLoss < 100 {
@@ -115,16 +171,15 @@ UNTIL SHIP:APOAPSIS > 80000 { //Remember, all altitudes will be in meters, not k
 //		SET AdjustedThrottle to (AdjustedThrottle + 0.01).
 //	}
 
-
 	
     IF SHIP:VELOCITY:SURFACE:MAG < 100 {
 	//This sets our steering 90 degrees up and yawed to the compass
 		//heading of 90 degrees (east)
-        SET MYSTEER TO HEADING(90,90).
+        SET MYSTEER TO HEADING(0,90).
 
     //Once we pass 100m/s, we want to pitch down
     } ELSE IF SHIP:VELOCITY:SURFACE:MAG >= 100 {
-        SET MYSTEER TO HEADING(90,PitchingSteer).
+        SET MYSTEER TO HEADING(0,PitchingSteer).
     } 
 
 

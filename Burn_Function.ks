@@ -19,13 +19,18 @@ FUNCTION MANEUVER_TIME {
 
   LIST ENGINES IN en.
 
-  LOCAL f IS en[0]:MAXTHRUST * 1000.  // Engine Thrust (kg * m/s²)
+//  LOCAL f IS en[0]:MAXTHRUST * 1000.  // Engine Thrust (kg * m/s²)
+  LOCAL f IS SHIP:MAXTHRUST * 1000.  // Engine Thrust (kg * m/s²)
   LOCAL m IS SHIP:MASS * 1000.        // Starting mass (kg)
   LOCAL e IS CONSTANT():E.            // Base of natural log
-  LOCAL p IS en[0]:ISP.               // Engine ISP (s)
+  LOCAL p IS en[(en:LENGTH -1 )]:ISP.               // Engine ISP (s)
+//  if p < 0.1
+//  {
+//     p IS en[1]:ISP.
+//  }
   LOCAL g IS 9.80665.                 // Gravitational acceleration constant (m/s²)
 
-  RETURN g * m * p * (1 - e^(-dV/(g*p))) / f.
+  RETURN g * m * p * (1 - e^(-dV/ MAX(0.0000001,(g*p)))) / f.
 }.
 
 //PRINT "Time for a 100m/s burn: " + MANEUVER_TIME(100).

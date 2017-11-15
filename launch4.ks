@@ -107,9 +107,9 @@ LOCK RemainingSecs TO ((70000-SHIP:ALTITUDE)/MAX(0.0000001,SIN(PitchingSteer))) 
 LOCK AirEstimatedLoss TO (SHIP:Q * DragCST)/2 * RemainingSecs.
 LOCK AirResistPitch TO MIN((AirEstimatedLoss*10),90).
 LOCK SpeedPitch TO (100-(GROUNDSPEED/12)).
-LOCK AltitudePitch TO (90 - ((SHIP:Altitude /50000 )*90)).
+LOCK AltitudePitch TO (90 - ((SHIP:Altitude /60000 )*90)).
 LOCK GravityLoss TO SIN(PitchingSteer)*AVAILABLETHRUST - SHIP:MASS * GravCst.
-LOCK GravityEstimatedLoss TO GravityLoss*SHIP:MASS*(TargetOrbitalSpeed-GROUNDSPEED)/(AVAILABLETHRUST*MAX(0.0000001,COS(PitchingSteer))).
+LOCK GravityEstimatedLoss TO GravityLoss*SHIP:MASS*(TargetOrbitalSpeed-GROUNDSPEED)/(AVAILABLETHRUST*MAX(0.0001,COS(PitchingSteer))).
 LOCK LNPitch TO 90 - (90 *  LN(SHIP:ALTITUDE/TargetAltitude +1)).
 
 SET MYSTEER TO HEADING(90,90).
@@ -145,11 +145,10 @@ UNTIL SHIP:APOAPSIS > 80000 { //Remember, all altitudes will be in meters, not k
 
 
 	PRINT "Pitching to " + PitchingSteer + " degrees" AT(0,15).
-	PRINT ROUND(SHIP:APOAPSIS,0) AT (0,16).
+	PRINT "APOAPSIS: " + ROUND(SHIP:APOAPSIS,0) AT (0,16).
 	PRINT "Velocities " AT(0,17).
 	PRINT "Ship Air Velocity:" + SHIP:AIRSPEED AT(0,18).
 	PRINT "Air Pressure     :" + SHIP:Q AT(0,19).
-	PRINT "Outside pressure :" + SHIP:SENSORS:PRES AT(0,20).
 	PRINT "Estimated AirLoss:" + AirEstimatedLoss AT(0,21).
 	PRINT "Gravity Loss     :" + GravityLoss AT(0,22).
 	PRINT "Est. Gravity Loss:" + GravityEstimatedLoss  AT(0,23).
