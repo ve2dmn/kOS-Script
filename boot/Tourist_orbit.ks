@@ -6,5 +6,8 @@ CopyPath( "Burn_Function.ks", "1:/Burn_Function.ks").
 Switch to 1.
 WAIT 3.
 RUN Launch4.ks.
-RUn Orbit1.ks.
-
+RUN Orbit1.ks.
+set kuniverse:timewarp:warp to 4.
+kuniverse:timewarp:warpto(time:seconds + 3600).
+WAIT 3.
+RUN Land1.ks.
