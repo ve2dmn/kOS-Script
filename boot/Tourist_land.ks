@@ -7,3 +7,5 @@ Switch to 1.
 RUN Launch4.ks.
 RUn Orbit1.ks.
 Run Land1.ks.
+
+Shutdown.

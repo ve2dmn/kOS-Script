@@ -11,3 +11,5 @@ set kuniverse:timewarp:warp to 4.
 kuniverse:timewarp:warpto(time:seconds + 3600).
 WAIT 3.
 RUN Land1.ks.
+
+Shutdown.

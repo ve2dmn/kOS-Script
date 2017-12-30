@@ -5,5 +5,6 @@ CopyPath( "Burn_Function.ks", "1:/Burn_Function.ks").
 Switch to 1.
 WAIT 3.
 RUN LaunchEquator.ks.
-RUn Orbit1.ks.
+RUN Orbit1.ks.
 
+Shutdown.
