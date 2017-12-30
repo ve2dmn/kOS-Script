@@ -1,6 +1,9 @@
 //Based on hellolaunch
 //First, we'll clear the terminal screen to make it look nice
 CLEARSCREEN.
+
+//set default value to 0 in case the script crashs
+SET SHIP:CONTROL:PILOTMAINTHROTTLE TO 0.
 //Next, we'll lock our throttle to 100%.
 LOCK THROTTLE TO 1.0.   // 1.0 is the max, 0.0 is idle.
 //This is a trigger that constantly checks to see if our thrust is zero.
@@ -13,7 +16,7 @@ LOCK THROTTLE TO 1.0.   // 1.0 is the max, 0.0 is idle.
 SET Logging TO FALSE.
 
 SET TargetAltitude TO 80000.
-SET GravCst TO 9.82. 
+SET GravCst TO KERBIN:MU / KERBIN:RADIUS^2.
 SET TargetOrbitalSpeed TO 600000 * SQRT(GravCst/(600000+TargetAltitude)).
 SET Staggincount TO 3.
 Set PitchingSteer to 90.
