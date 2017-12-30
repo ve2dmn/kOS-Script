@@ -17,18 +17,21 @@
 FUNCTION MANEUVER_TIME {
   PARAMETER dV.
 
-  LIST ENGINES IN en.
+  LIST ENGINES IN engs.
 
-//  LOCAL f IS en[0]:MAXTHRUST * 1000.  // Engine Thrust (kg * m/s²)
   LOCAL f IS SHIP:MAXTHRUST * 1000.  // Engine Thrust (kg * m/s²)
   LOCAL m IS SHIP:MASS * 1000.        // Starting mass (kg)
   LOCAL e IS CONSTANT():E.            // Base of natural log
-  LOCAL p IS en[(en:LENGTH -1 )]:ISP.               // Engine ISP (s)
-//  if p < 0.1
-//  {
-//     p IS en[1]:ISP.
-//  }
-  LOCAL g IS 9.80665.                 // Gravitational acceleration constant (m/s²)
+  LOCAL g IS KERBIN:MU / KERBIN:RADIUS^2.    // Gravitational acceleration constant (9.80665m/s²)
+
+  LOCAL TotalFuelFlow IS 0.
+	FOR eng IN engs {
+		if(eng:IGNITION){
+			SET TotalFuelFlow to TotalFuelFlow + (eng:ISP / eng:AVAILABLETHRUST).
+		}
+	}.
+  LOCAL p IS SHIP:MAXTHRUST/MAX(0.0000001,TotalFuelFlow).  // Engine ISP(s)
+
 
   RETURN g * m * p * (1 - e^(-dV/ MAX(0.0000001,(g*p)))) / f.
 }.
