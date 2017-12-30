@@ -48,7 +48,14 @@ UNTIL SHIP:PERIAPSIS > 75000 { //Remember, all altitudes will be in meters, not 
 		 LOCK THROTTLE TO 1.0. 
 	}
 	ELSE {LOCK THROTTLE TO 0.}
-	SET MYSTEER TO Burn:BURNVECTOR.
+	IF BurnTime < 5 {
+		UNLOCK STEERING.
+		SAS ON.
+		}
+	ELSE {
+		SET MYSTEER TO Burn:BURNVECTOR.
+		}
+	
 	SET BurnTime to MANEUVER_TIME(Burn:PROGRADE).
 	PRINT "Time to Apoapsis:" + ETA:APOAPSIS AT(0,17).
 	PRINT "Vertcal Velocity:" + SHIP:VERTICALSPEED AT(0,18).
