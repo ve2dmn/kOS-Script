@@ -17,17 +17,9 @@ SET SpeedPitch TO 90.
 SET AltitudePitch TO 90.
 SET FlamoutTrigger TO FALSE.
 
-
 PRINT "TargetAltitude:" + TargetAltitude .
 PRINT "TargetOrbitalSpeed:" + TargetOrbitalSpeed.
 
-//SET myPart TO SHIP:PARTSDUBBED("FuelA")[0].
-
-//For Apergus Stagging
-//WHEN myPart:RESOURCES[0]:amount = 0 THEN {
-//	PRINT "Part Staging".
-//	STAGE.
-//	}
 
 //This is a trigger that constantly checks to see if our thrust is zero.
 WHEN MAXTHRUST = 0 THEN {
@@ -55,9 +47,7 @@ WHEN FlamoutTrigger THEN {
 
 //This will be our main control loop for the ascent. It will
 //cycle through continuously until our apoapsis is greater
-//than TargetAltitude. Each cycle, it will check each of the IF
-//statements inside and perform them if their conditions
-//are met.
+//than TargetAltitude. 
 
 LOCK SpeedPitch TO (100-(GROUNDSPEED/12)).
 LOCK AltitudePitch TO (90 - ((SHIP:Altitude /HorizontalAltitude )*90)).
@@ -70,7 +60,7 @@ UNTIL SHIP:APOAPSIS > TargetAltitude { //Remember, all altitudes will be in mete
     //up and rolled due east
 
 	IF  SHIP:ALTITUDE < 500 {
-		SET PitchingSteer to AltitudePitch. //Below 500, be conservative....
+		SET PitchingSteer to AltitudePitch. //Below 500, be conservative
 	}ELSE {
 		SET PitchingSteer TO MIN(AltitudePitch,SpeedPitch).
 		}
