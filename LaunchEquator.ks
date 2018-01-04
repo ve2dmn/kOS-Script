@@ -69,24 +69,22 @@ UNTIL SHIP:APOAPSIS > TargetAltitude { //Remember, all altitudes will be in mete
 	IF PitchingSteer >90 SET PitchingSteer to 90.
 	IF PitchingSteer <0 SET PitchingSteer to 0.
 
-	set i TO 14.
-	PRINT "Pitching to " + PitchingSteer + " degrees" AT(0,8).
-	PRINT "APOAPSIS: " + ROUND(SHIP:APOAPSIS,0) AT (0,9).
-	PRINT "Velocities " AT(0,10).
-	PRINT "Ship Air Velocity:" + SHIP:AIRSPEED AT(0,11).
-	PRINT "Ship Q     :" + SHIP:Q AT(0,12).
-	PRINT "List of Engines" AT(0,13).
+	set i TO 8.
+	PRINT "Pitching to " + PitchingSteer + " degrees" AT(0,i).
+	PRINT "APOAPSIS: " + ROUND(SHIP:APOAPSIS,0) AT (0,i+1).
+	PRINT "Velocities " AT(0,i+2).
+	PRINT "Ship Air Velocity:" + SHIP:AIRSPEED AT(0,i+3).
+	PRINT "Ship Q     :" + SHIP:Q AT(0,i+4).
+	PRINT "List of Engines" AT(0,i+5).
 	set EngineFlameout TO false.
 	list engines in engs.
 	FOR eng IN engs {
-		print " Activated: " +eng:IGNITION + " Flameout:" + eng:FLAMEOUT +" Engine ISP:" + eng:ISP AT(0,i).
 		if(eng:FLAMEOUT){
 		SET EngineFlameout to true.
 		}
-		SET i TO i+1.
 	}.
 	SET FlamoutTrigger TO EngineFlameout.
-	PRINT "--------------------------------------------------------------------------------" AT(0,i).
+	PRINT "-------------------------------------" AT(0,6).
 
 
 	
