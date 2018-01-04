@@ -26,8 +26,8 @@ FUNCTION MANEUVER_TIME {
 
   LOCAL TotalFuelFlow IS 0.
 	FOR eng IN engs {
-		if(eng:IGNITION){
-			SET TotalFuelFlow to TotalFuelFlow + (eng:ISP / eng:AVAILABLETHRUST).
+		if(eng:IGNITION and eng:AVAILABLETHRUST >0.1){
+			SET TotalFuelFlow to TotalFuelFlow + (eng:ISP / MAX(eng:AVAILABLETHRUST, 1)).
 		}
 	}.
   LOCAL p IS SHIP:MAXTHRUST/MAX(0.0000001,TotalFuelFlow).  // Engine ISP(s)
