@@ -1,5 +1,8 @@
+
 //Based on hellolaunch
 //First, we'll clear the terminal screen to make it look nice
+DECLARE PARAMETER TargetAltitude IS body:atm:height + 10000.
+DECLARE PARAMETER Orientation IS 90.
 CLEARSCREEN.
 
 //set default value to 0 in case the script crashs
@@ -7,8 +10,8 @@ SET SHIP:CONTROL:PILOTMAINTHROTTLE TO 0.
 //Next, we'll lock our throttle to 100%.
 LOCK THROTTLE TO 1.0.   // 1.0 is the max, 0.0 is idle.
 
-SET TargetAltitude TO body:atm:height + 10000.
-SET HorizontalAltitude TO body:atm:height - 20000.
+
+SET HorizontalAltitude TO MAX(body:atm:height - 15000,7000).
 SET GravCst TO KERBIN:MU / KERBIN:RADIUS^2.
 SET TargetOrbitalSpeed TO 600000 * SQRT(GravCst/(600000+TargetAltitude)).
 Set PitchingSteer to 90.
@@ -90,12 +93,12 @@ UNTIL SHIP:APOAPSIS > TargetAltitude { //Remember, all altitudes will be in mete
 	
     IF SHIP:VELOCITY:SURFACE:MAG < 100 {
 	//This sets our steering 90 degrees up and yawed to the compass
-		//heading of 90 degrees (east)
-        SET MYSTEER TO HEADING(90,90).
+		//heading of 90 degrees (east), by default.
+        SET MYSTEER TO HEADING(Orientation,90).
 
     //Once we pass 100m/s, we want to pitch down
     } ELSE IF SHIP:VELOCITY:SURFACE:MAG >= 100 {
-        SET MYSTEER TO HEADING(90,PitchingSteer).
+        SET MYSTEER TO HEADING(Orientation,PitchingSteer).
     } 
 
 
