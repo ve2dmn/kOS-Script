@@ -32,7 +32,6 @@ FUNCTION MANEUVER_TIME {
 	}.
   LOCAL p IS SHIP:MAXTHRUST/MAX(0.0000001,TotalFuelFlow).  // Engine ISP(s)
 
-
   RETURN g * m * p * (1 - e^(-dV/ MAX(0.0000001,(g*p)))) / f.
 }.
 

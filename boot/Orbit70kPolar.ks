@@ -1,9 +1,17 @@
+If (SHIP:PERIAPSIS > body:atm:height + 10000){
+	Print "Already in orbit".
+	Shutdown.
+	}
+
+
 Switch to 0.
-CopyPath( "LaunchPolar.ks", "1:/LaunchPolar.ks").
-CopyPath( "Orbit1.ks", "1:/Orbit1.ks").
+CopyPath( "LaunchWParameters.ks", "1:/LaunchWParameters.ks").
+CopyPath( "OrbitWParameters.ks", "1:/OrbitWParameters.ks").
 CopyPath( "Burn_Function.ks", "1:/Burn_Function.ks").
 Switch to 1.
-RUN LaunchPolar.ks.
-RUn Orbit1.ks.
+WAIT 3.
+SET Destination_Altitude to 80000.
+RUN LaunchWParameters(Destination_Altitude,0).
+RUN OrbitWParameters(Destination_Altitude,0).
 
 Shutdown.

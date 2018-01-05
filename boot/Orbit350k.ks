@@ -1,3 +1,9 @@
+If (SHIP:PERIAPSIS > body:atm:height + 10000){
+	Print "Already in orbit".
+	Shutdown.
+	}
+
+
 Switch to 0.
 CopyPath( "LaunchWParameters.ks", "1:/LaunchWParameters.ks").
 CopyPath( "OrbitWParameters.ks", "1:/OrbitWParameters.ks").
