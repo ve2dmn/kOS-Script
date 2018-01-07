@@ -78,7 +78,6 @@ UNTIL SHIP:APOAPSIS > TargetAltitude { //Remember, all altitudes will be in mete
 	PRINT "Velocities " AT(0,i+2).
 	PRINT "Ship Air Velocity:" + SHIP:AIRSPEED AT(0,i+3).
 	PRINT "Ship Q     :" + SHIP:Q AT(0,i+4).
-	PRINT "List of Engines" AT(0,i+5).
 	set EngineFlameout TO false.
 	list engines in engs.
 	FOR eng IN engs {
@@ -87,7 +86,7 @@ UNTIL SHIP:APOAPSIS > TargetAltitude { //Remember, all altitudes will be in mete
 		}
 	}.
 	SET FlamoutTrigger TO EngineFlameout.
-	PRINT "--------------------------" AT(0,6).
+	PRINT "--------------------------" AT(0,i+6).
 
 
 	
