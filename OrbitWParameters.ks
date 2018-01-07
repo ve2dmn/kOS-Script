@@ -15,6 +15,13 @@ PRINT "Time for a 400m/s burn: " + MANEUVER_TIME(400).
 PRINT "Time for a 500m/s burn: " + MANEUVER_TIME(500).
 PRINT "Time for a 1000m/s burn: " + MANEUVER_TIME(1000).
 
+SET FlamoutTrigger TO FALSE.
+
+
+
+
+
+
 
 WAIT UNTIL SHIP:ALTITUDE > body:atm:height.
 CLEARSCREEN.
@@ -50,7 +57,15 @@ LOCK THROTTLE TO 1.0.   // 1.0 is the max, 0.0 is idle.
 UNTIL SHIP:PERIAPSIS > TargetAltitude * 0.95 { 
 
 	IF Burn:ETA < (BurnTime/2){
-		 LOCK THROTTLE TO 1.0. 
+		 LOCK THROTTLE TO 1.0.
+		set EngineFlameout TO false.
+		list engines in engs.
+		FOR eng IN engs {
+			if(eng:FLAMEOUT){
+				SET EngineFlameout to true.
+			}
+		}.
+		SET FlamoutTrigger TO EngineFlameout.
 	}
 	ELSE {LOCK THROTTLE TO 0.}
 
@@ -72,3 +87,4 @@ UNTIL SHIP:PERIAPSIS > TargetAltitude * 0.95 {
 PRINT "70km periapsis reached, cutting throttle".
 LOCK THROTTLE TO 0.
 SET SHIP:CONTROL:PILOTMAINTHROTTLE TO 0.
+removeAllNodes().
