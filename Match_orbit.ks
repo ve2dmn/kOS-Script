@@ -3,6 +3,26 @@
 RUN ONCE Orbit_Functions.ks.
 RUN ONCE Burn_Function.ks.
 
+//Debug Output
+SET anArrow TO VECDRAWARGS(
+      SHIP:BODY:POSITION,  
+       V(0,0,0),
+      MAGENTA,
+      "Vector_to_AN",
+      1.0,
+      FALSE,
+      0.2
+    ).
+SET dnArrow TO VECDRAWARGS(
+      SHIP:BODY:POSITION,  
+       V(0,0,0),
+      CYAN,
+      "Vector_to_DN",
+      1.0,
+      FALSE,
+      0.2
+    ).
+
 CLEARSCREEN.
 PRINT "Trying to Match orbit of target".
 SET Waittime to TIME:SECONDS + 20.
@@ -30,6 +50,16 @@ LOCAL Angle_to_DN TO VECTORANGLE( SHIP_LOCAL_POSITION, Vector_to_DN).
 
 
 //Debug Output
+SET anArrow:Start TO  SHIP:BODY:POSITION.
+SET anArrow:VEC TO Vector_to_AN*1000000.
+SET anArrow:SHOW TO TRUE.
+
+SET dnArrow:Start TO  SHIP:BODY:POSITION.
+SET dnArrow:VEC TO Vector_to_DN*1000000.
+SET dnArrow:SHOW TO TRUE.
+
+
+
 PRINT "Vector_to_AN:"+ Vector_to_AN AT(0,3).
 PRINT "Vector_to_DN:" +Vector_to_DN AT(0,4).
 PRINT "Ship_normal:"+ Ship_normal AT(0,5).
