@@ -1,3 +1,8 @@
+FUNCTION removeAllNodes
+{
+  UNTIL NOT HASNODE { REMOVE NEXTNODE. WAIT 0. }
+}
+
 ///////////////////////
 //Based on code avaialable here:
 //https://www.reddit.com/r/Kos/comments/3ftcwk/compute_burn_time_with_calculus/
