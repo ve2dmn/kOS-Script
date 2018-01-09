@@ -41,12 +41,12 @@ PRINT "TARGET ACQUIRED" AT(0,2).
 //Get Vector to Acending/Descending node
 LOCAL Vector_to_AN TO Find_Acending_Vector(TARGET):NORMALIZED.
 LOCAL Vector_to_DN TO Find_Acending_Vector(TARGET,SHIP,TRUE):NORMALIZED.
-LOCAL SHIP_LOCAL_POSITION IS SHIP:POSITION - SHIP:BODY:POSITION.
-LOCAL Ship_normal IS VECTORCROSSPRODUCT(SHIP_LOCAL_POSITION, SHIP:VELOCITY:ORBIT):NORMALIZED.
-LOCAL Determinant_AN IS VECTORDOTPRODUCT(Ship_normal,VECTORCROSSPRODUCT(SHIP_LOCAL_POSITION, Vector_to_AN)).
-LOCAL Determinant_DN IS VECTORDOTPRODUCT(Ship_normal,VECTORCROSSPRODUCT(SHIP_LOCAL_POSITION, Vector_to_DN)).
-LOCAL Angle_to_AN TO VECTORANGLE( SHIP_LOCAL_POSITION, Vector_to_AN).
-LOCAL Angle_to_DN TO VECTORANGLE( SHIP_LOCAL_POSITION, Vector_to_DN).
+LOCAL SHIP_SOI_POSITION IS SHIP:POSITION - SHIP:BODY:POSITION.
+SET SHIP_SOI_POSITION TO SHIP_SOI_POSITION:NORMALIZED.
+LOCAL Ship_normal IS VECTORCROSSPRODUCT(SHIP_SOI_POSITION, SHIP:VELOCITY:ORBIT):NORMALIZED.
+LOCAL Check_if_AN IS VECTORDOTPRODUCT(SHIP:BODY:UP:UPVECTOR,VECTORCROSSPRODUCT(SHIP_SOI_POSITION, Vector_to_AN)).
+LOCAL Angle_to_AN TO VECTORANGLE( SHIP_SOI_POSITION, Vector_to_AN).
+LOCAL Angle_to_DN TO VECTORANGLE( SHIP_SOI_POSITION, Vector_to_DN).
 
 
 //Debug Output
@@ -63,18 +63,18 @@ SET dnArrow:SHOW TO TRUE.
 PRINT "Vector_to_AN:"+ Vector_to_AN AT(0,3).
 PRINT "Vector_to_DN:" +Vector_to_DN AT(0,4).
 PRINT "Ship_normal:"+ Ship_normal AT(0,5).
-PRINT "Determinant_AN:" + Determinant_AN AT(0,6).
-PRINT "Determinant_DN:" + Determinant_DN AT(0,7).
+PRINT "Check_if_AN:" + Check_if_AN AT(0,6).
+
 PRINT "Angle_to_AN:"+ Angle_to_AN AT(0,8).
 PRINT "Angle_to_DN:"+ Angle_to_DN AT(0,9).
 
 
-IF(Determinant_AN <0){
+IF(Check_if_AN <0){
 	SET Angle_to_AN TO  360 -Angle_to_AN.
-}
-IF(Determinant_DN <0){
+} ELSE {
 	SET Angle_to_DN TO  360-Angle_to_DN.
 }
+
 
 //Get Time to Acending/Descending node
 LOCAL TIME_to_nodeAN IS Seconds_To_MAnomaly(Angle_to_AN + Mean_Anormality_at_t()).
@@ -105,8 +105,10 @@ IF (TIME_to_nodeAN < TIME_to_nodeDN){
 	SET Burn:NORMAL to  2*VELOCITYAT(SHIP,TIME:SECONDS+TIME_to_nodeDN):ORBIT:MAG  * SIN(Find_degree_Orbits(Target) * 0.5).
 }
 
+
+
 //Wait for node.
-//SET BurnTime to MANEUVER_TIME(Burn:NORMAL).
+//SET BurnTime to MANEUVER_TIME(Burn:DELTAV).
 //PRINT "Time for burn: " + BurnTime.
 //PRINT "HALF burn: " + (BurnTime/2).
 
