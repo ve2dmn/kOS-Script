@@ -14,11 +14,24 @@ FUNCTION Find_Acending_Vector{
 	LOCAL Normal_Vector_1 IS VECTORCROSSPRODUCT(POSITION_1, Orbitable_1:VELOCITY:ORBIT):NORMALIZED.
 	LOCAL Normal_Vector_0 IS VECTORCROSSPRODUCT(POSITION_0, Orbitable_0:VELOCITY:ORBIT):NORMALIZED.
 	
+	LOCAL Vector_to_Node IS VECTORCROSSPRODUCT(Normal_Vector_0, Normal_Vector_1).
+	
+	LOCAL Check_if_AN IS VECTORDOTPRODUCT(SHIP:BODY:UP:UPVECTOR,VECTORCROSSPRODUCT(Normal_Vector_0-Normal_Vector_1, Vector_to_Node)).
+	LOCAL Vector_to_AN Is Vector_to_Node:NORMALIZED.
+	LOCAL Vector_to_DN Is -Vector_to_Node:NORMALIZED.
+	
+	//Vector_to_AN is really Vector_to_DN. Reverse both.
+	if(Check_if_AN > 0 ) {
+		SET Vector_to_AN  TO Vector_to_DN.
+		SET Vector_to_DN  TO Vector_to_Node:NORMALIZED.
+		}
+
 	IF(Descending) {
-			RETURN VECTORCROSSPRODUCT(Normal_Vector_1,Normal_Vector_0).
+			RETURN Vector_to_DN.
 		}
 	
-	RETURN VECTORCROSSPRODUCT(Normal_Vector_0, Normal_Vector_1).
+	RETURN Vector_to_AN.
+
 }
 //to get the True Anomaly out of the return vector, just calculate the angle between the ship position and this vector
 //ex: TA = VECTORANGLE(SHIP:POSITION - SHIP:BODY:POSITION, Find_Acending_Vector(TheOtherOrbitable)).
