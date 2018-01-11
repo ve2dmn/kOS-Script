@@ -37,6 +37,7 @@ UNTIL (HASTARGET ){
 
 PRINT "TARGET ACQUIRED" AT(0,2).
 
+Until(false){
 
 //Get Vector to Acending/Descending node
 LOCAL Vector_to_AN TO Find_Acending_Vector(TARGET):NORMALIZED.
@@ -93,7 +94,7 @@ PRINT "TIME_to_node2:"+ TIME_to_nodeDN AT(0,14).
 PRINT "TIME_to_node1TA:"+ TIME_to_nodeAN2 AT(0,15).
 PRINT "TIME_to_node2TA:"+ TIME_to_nodeDN2 AT(0,16).
 
-
+}
 
 IF (TIME_to_nodeAN < TIME_to_nodeDN){
 	SET Burn TO NODE(TIME:SECONDS+TIME_to_nodeAN, 0, 0, 1).
