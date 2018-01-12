@@ -33,10 +33,12 @@ Switch to 0.
 CopyPath( "LaunchWParameters.ks", "1:/LaunchWParameters.ks").
 CopyPath( "OrbitWParameters.ks", "1:/OrbitWParameters.ks").
 CopyPath( "Burn_Function.ks", "1:/Burn_Function.ks").
+CopyPath( "Orbit_Function.ks", "1:/Orbit_Function.ks").
+CopyPath( "Match_orbits.ks", "1:/Match_orbits.ks").
 Switch to 1.
 WAIT 3.
 SET Destination_Altitude to 80000.
 RUN LaunchWParameters(Destination_Altitude,90 - TARGET:ORBIT:Inclination).
 RUN OrbitWParameters(Destination_Altitude,90 - TARGET:ORBIT:Inclination).
-
+RUN Match_orbits.ks.
 Shutdown.

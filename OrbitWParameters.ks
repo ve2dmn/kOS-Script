@@ -27,12 +27,16 @@ WAIT UNTIL SHIP:ALTITUDE > body:atm:height.
 CLEARSCREEN.
 PRINT "Space reached".
 
-SET Burn TO NODE(TIME:SECONDS+ETA:APOAPSIS, 0, 0, 100).
+LOCAL Current_speed IS VELOCITYAT(SHIP,TIME:SECONDS+ETA:APOAPSIS):orbit:MAG.
+LOCAL Target_speed IS  SQRT (SHIP:BODY:MU/ (SHIP:Body:RADIUS+ SHIP:APOAPSIS)).
+LOCAL Burn_speed IS Target_speed - Current_speed.
+
+SET Burn TO NODE(TIME:SECONDS+ETA:APOAPSIS, 0, 0, Burn_speed).
 ADD Burn.
-UNTIL Burn:ORBIT:PERIAPSIS > TargetAltitude {
-	SET Burn:PROGRADE to Burn:PROGRADE+10.
-	IF Burn:ORBIT:APOAPSIS > (SHIP:APOAPSIS + 5000) { Break.}
-}.
+//UNTIL Burn:ORBIT:PERIAPSIS > TargetAltitude {
+//	SET Burn:PROGRADE to Burn:PROGRADE+10.
+//	IF Burn:ORBIT:APOAPSIS > (SHIP:APOAPSIS + 5000) { Break.}
+//}.
 SET MYSTEER TO Burn:BURNVECTOR.
 LOCK STEERING TO MYSTEER.
 PRINT "SHIP:MAXTHRUST : " + SHIP:MAXTHRUST AT(0,2).
@@ -54,7 +58,7 @@ UNTIL Burn:ETA < (BurnTime/2){
 //Next, we'll lock our throttle to 100%.
 LOCK THROTTLE TO 1.0.   // 1.0 is the max, 0.0 is idle.
 
-UNTIL SHIP:PERIAPSIS > TargetAltitude * 0.95 { 
+UNTIL SHIP:PERIAPSIS > TargetAltitude * 0.99 { 
 
 	IF Burn:ETA < (BurnTime/2){
 		 LOCK THROTTLE TO 1.0.
