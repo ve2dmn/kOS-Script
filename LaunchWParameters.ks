@@ -20,7 +20,7 @@ SET SpeedPitch TO 90.
 SET AltitudePitch TO 90.
 SET FlamoutTrigger TO FALSE.
 
-PRINT "TargetAltitude:" + TargetAltitude .
+PRINT "TargetAltitude:" + TargetAltitude + " Inclination:" + Orientation.
 PRINT "TargetOrbitalSpeed:" + TargetOrbitalSpeed.
 
 
